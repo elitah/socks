@@ -97,7 +97,11 @@ func parse(proxyURI string) (*Config, error) {
 		cfg.Timeout, err = time.ParseDuration(timeout)
 		if err != nil {
 			return nil, err
+		} else {
+			cfg.Timeout = 30 * time.Second
 		}
+	} else {
+		cfg.Timeout = 30 * time.Second
 	}
 	return cfg, nil
 }
@@ -138,7 +142,7 @@ func (cfg *Config) dialSocks5(targetAddr string) (conn net.Conn, err error) {
 	proxy := cfg.Host
 
 	// dial TCP
-	conn, err = net.Dial("tcp", proxy)
+	conn, err = net.DialTimeout("tcp", proxy, cfg.Timeout)
 	if err != nil {
 		return
 	}
@@ -197,7 +201,7 @@ func (cfg *Config) dialSocks4(targetAddr string) (conn net.Conn, err error) {
 	proxy := cfg.Host
 
 	// dial TCP
-	conn, err = net.Dial("tcp", proxy)
+	conn, err = net.DialTimeout("tcp", proxy, cfg.Timeout)
 	if err != nil {
 		return
 	}
